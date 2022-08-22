@@ -11,3 +11,9 @@ GAS_REPORT=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
+
+# Running application
+
+- Install root level dependencies by running `yarn`.
+- cd into `ui` and install dependecies by running `yarn`.
+- To run the `ui`, run `yarn dev` from `ui`.
