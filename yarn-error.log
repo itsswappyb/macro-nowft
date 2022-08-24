@@ -1,0 +1,42 @@
+Arguments: 
+  /Users/swappyb/.nvm/versions/node/v16.14.0/bin/node /Users/swappyb/.nvm/versions/node/v16.14.0/bin/yarn add -D prettier-plugin-solidity solhint solhint-coverage
+
+PATH: 
+  /Users/swappyb/.nvm/versions/node/v16.14.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/sbin:/opt/homebrew/bin:/opt/homebrew/Cellar/pyenv-virtualenv/1.1.5/shims:/Users/swappyb/.pyenv/shims:/Users/swappyb/.pyenv/bin:/Users/swappyb/Library/Python/3.8/bin:/Users/swappyb/bin:/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/swappyb/.nvm/versions/node/v16.14.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/Cellar/pyenv-virtualenv/1.1.5/shims:/Users/swappyb/.pyenv/bin:/Users/swappyb/Library/Python/3.8/bin:/Users/swappyb/bin:/Users/swappyb/.cargo/bin:/Users/swappyb/.foundry/bin:/Users/swappyb/.foundry/bin
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  16.14.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/solhint-coverage: Not found
+      at Request.params.callback [as _callback] (/Users/swappyb/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:66138:18)
+      at Request.self.callback (/Users/swappyb/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:520:28)
+      at Request.<anonymous> (/Users/swappyb/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:520:28)
+      at IncomingMessage.<anonymous> (/Users/swappyb/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:639:28)
+      at IncomingMessage.emit (node:events:532:35)
+      at endReadableNT (node:internal/streams/readable:1346:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "hardhat-project",
+    "devDependencies": {
+      "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+      "hardhat": "^2.10.2"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
