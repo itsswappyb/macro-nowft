@@ -15,6 +15,9 @@ module.exports = {
                 'satoshi': ['Satoshi', 'sans-serif'],
                 'isatoshi': ['SatoshiItalic', 'sans-serif'],
             },
+            backgroundImage: {
+                'gradientbg' : "url('../public/NowFT_bg.png')",
+            }
         },
     },
     plugins: [],

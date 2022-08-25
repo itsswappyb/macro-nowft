@@ -45,7 +45,7 @@ const NavItem = ({ url, name, current, mobile = false }: NavItemProps) => {
             href={url}
             className={classNames(
               current ? 'text-white' : 'text-gray-500 hover:text-white',
-              'px-3 py-2 rounded-md text-base font-semibold font-archivo'
+              'px-3 py-2 rounded-md text-base font-semibold'
             )}
             aria-current={current ? 'page' : undefined}
           >

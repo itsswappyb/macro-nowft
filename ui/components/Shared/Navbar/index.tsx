@@ -8,7 +8,7 @@ import Image from 'next/Image'
 
 const Navbar = () => {
 
-  const isAuthenticated = false
+  const isAuthenticated = true
 
   return (
     <Disclosure as="nav" className="bg-corbeau sticky top-0 z-30">
@@ -48,7 +48,7 @@ const Navbar = () => {
                     ? (
                       <Menu.Button className="flex bg-transparent text-white py-2 px-6 border border-spritzig rounded-2xl">
                         <UserCircleIcon className="w-5 h-5 my-auto mr-1"/>
-                        <p>0x3d2f0....863</p>
+                        <p>0x3d2....863</p>
                       </Menu.Button>
                     )
                     : <button className="bg-transparent text-white py-2 px-6 border border-spritzig rounded-2xl">
