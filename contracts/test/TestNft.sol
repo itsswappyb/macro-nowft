@@ -2,21 +2,22 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract TestNft is ERC721 {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
     string public constant TOKEN_URI = "testTokenUri";
-    uint256 private _tokenCounter;
 
-    event DogMinted(uint256 indexed tokenId);
+    event NftMinted(uint256 indexed tokenId);
 
-    constructor() ERC721("Test", "TEST") {
-        _tokenCounter = 0;
-    }
+    constructor() ERC721("Test", "TEST") {}
 
     function mintNft() public {
+        uint256 _tokenCounter = _tokenIds.current();
         _safeMint(msg.sender, _tokenCounter);
-        emit DogMinted(_tokenCounter);
-        _tokenCounter = _tokenCounter + 1;
+        emit NftMinted(_tokenCounter);
+        _tokenIds.increment();
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
@@ -25,6 +26,6 @@ contract TestNft is ERC721 {
     }
 
     function getTokenCounter() public view returns (uint256) {
-        return _tokenCounter;
+        return _tokenIds.current();
     }
 }
