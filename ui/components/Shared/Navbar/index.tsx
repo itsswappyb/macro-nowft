@@ -5,10 +5,9 @@ import { MenuIcon, XIcon, UserCircleIcon } from '@heroicons/react/outline'
 import NavItems from './NavItems'
 import ProfileDropdown from './ProfileDropdown'
 import Image from 'next/Image'
+import ConnectWallet from '@components/Shared/ConnectWallet'
 
 const Navbar = () => {
-
-  const isAuthenticated = true
 
   return (
     <Disclosure as="nav" className="bg-corbeau sticky top-0 z-10">
@@ -44,7 +43,7 @@ const Navbar = () => {
               {/* Profile w./ dropdown */}
               <Menu as="div" className="relative pr-2 sm:pr-0">
                 <div>
-                  {(isAuthenticated)
+                  {/* {(isAuthenticated)
                     ? (
                       <Menu.Button className="flex bg-transparent text-white py-2 px-6 border border-spritzig rounded-2xl">
                         <UserCircleIcon className="w-5 h-5 my-auto mr-1"/>
@@ -54,7 +53,8 @@ const Navbar = () => {
                     : <button className="bg-transparent text-white py-2 px-6 border border-spritzig rounded-2xl">
                         Connect Wallet
                       </button>
-                  }
+                  } */}
+                  <ConnectWallet/>
                 </div>
                 <ProfileDropdown/>
               </Menu>

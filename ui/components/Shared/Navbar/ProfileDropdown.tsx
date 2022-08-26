@@ -1,7 +1,8 @@
 import React from 'react'
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
-import Link from 'next/Link'
+import { useDisconnect } from "wagmi";
+import Link from 'next/link'
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -9,9 +10,7 @@ function classNames(...classes) {
 
 const ProfileDropdown = () => {
 
-    const logOut = async () => {
-        console.log("logged out");
-    }
+    const { disconnect } = useDisconnect();
 
   return (
     <div className="z-50">
@@ -27,33 +26,34 @@ const ProfileDropdown = () => {
             <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md py-1 bg-gray-800">
                 <Menu.Item>
                     {({ active }) => (
-                        <a
+                        <Link
                             href="/installments"
-                            className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2')}
                         >
-                            My Installments
-                        </a>
+                            <div className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2 hover:cursor-pointer')}>
+                                My Installments
+                            </div>
+                        </Link>
                     )}
                 </Menu.Item>
                 <Menu.Item>
                     {({ active }) => (
-                        <a
+                        <Link
                             href="/mycollection"
-                            className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2')}
                         >
-                            My Collection
-                        </a>
+                            <div className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2 hover:cursor-pointer')}>
+                                My Collection
+                            </div>
+                        </Link>
                     )}
                 </Menu.Item>
                 <Menu.Item>
                     {({ active }) => (
-                        <a
-                            href="#"
+                        <button
                             className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2')}
-                            onClick={logOut}
+                            onClick={disconnect}
                         >
                             Log Out
-                        </a>
+                        </button>
                     )}
                 </Menu.Item>
             </Menu.Items>
