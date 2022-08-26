@@ -6,6 +6,8 @@ import { NftMarketplace, TestNft } from "../typechain-types/contracts";
 import { BigNumber } from "ethers";
 
 const SECONDS_IN_DAY: number = 60 * 60 * 24;
+const SECONDS_IN_WEEK: number = 60 * 60 * 24 * 7;
+
 const ONE_ETHER: BigNumber = ethers.utils.parseEther("1");
 const FIVE_ETHER: BigNumber = ethers.utils.parseEther("5");
 
@@ -54,7 +56,7 @@ describe("NftMarketplace", () => {
                     TOKEN_ID,
                     TestNft.address,
                     ONE_ETHER.mul(30),
-                    SECONDS_IN_DAY * 30,
+                    SECONDS_IN_WEEK * 4,
                     20
                 )
             ).to.be.revertedWith("NotOwner");
@@ -65,17 +67,17 @@ describe("NftMarketplace", () => {
                     TOKEN_ID,
                     TestNft.address,
                     ONE_ETHER.mul(30),
-                    SECONDS_IN_DAY * 30,
+                    SECONDS_IN_WEEK * 4,
                     20
                 )
             ).to.emit(NftMarketplace, "ItemListed");
         });
-        it("should revert if  NFT is already listed", async () => {
+        it("should revert if NFT is already listed", async () => {
             await NftMarketplace.listNft(
                 TOKEN_ID,
                 TestNft.address,
                 ONE_ETHER.mul(30),
-                SECONDS_IN_DAY * 30,
+                SECONDS_IN_WEEK * 4,
                 20
             );
             await expect(
@@ -83,7 +85,7 @@ describe("NftMarketplace", () => {
                     TOKEN_ID,
                     TestNft.address,
                     ONE_ETHER.mul(30),
-                    SECONDS_IN_DAY * 30,
+                    SECONDS_IN_WEEK * 4,
                     20
                 )
             ).to.be.revertedWith("NotOwner");
