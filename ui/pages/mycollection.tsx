@@ -1,9 +1,9 @@
 import Layout from "@components/Layout";
-import MyProfile from "@components/MyProfile";
+import MyCollection from "@components/MyCollection";
 
 const HomePage = () => (
     <Layout title="My Collection | NowFT">
-        <MyProfile />
+        <MyCollection />
     </Layout>
 );
 

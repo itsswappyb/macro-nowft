@@ -14,7 +14,7 @@ const ProfileDropdown = () => {
     }
 
   return (
-    <div className="z-100">
+    <div className="z-50">
         <Transition
             as={Fragment}
             enter="transition ease-out duration-100"
@@ -28,10 +28,20 @@ const ProfileDropdown = () => {
                 <Menu.Item>
                     {({ active }) => (
                         <a
-                            href="/myprofile"
+                            href="/installments"
                             className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2')}
                         >
-                            My Profile
+                            My Installments
+                        </a>
+                    )}
+                </Menu.Item>
+                <Menu.Item>
+                    {({ active }) => (
+                        <a
+                            href="/mycollection"
+                            className={classNames(active ? 'text-white' : 'text-gray-500 hover:text-white', 'block px-4 py-2')}
+                        >
+                            My Collection
                         </a>
                     )}
                 </Menu.Item>
