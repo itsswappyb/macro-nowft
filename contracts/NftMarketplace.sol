@@ -4,11 +4,6 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-error PriceNotGreaterThanZero();
-error MarketplaceNotApproved();
-error ItemAlreadyListed();
-error NotOwner();
-
 contract NftMarketplace is IERC721Receiver {
     struct ListItem {
         uint256 price;
@@ -31,6 +26,8 @@ contract NftMarketplace is IERC721Receiver {
         uint256 interestPercentage
     );
 
+    event ERC721TokenReceived(address operator, address from, uint256 tokenId, bytes data);
+
     modifier notListed(
         uint256 tokenId,
         address nftAddress,
@@ -38,7 +35,7 @@ contract NftMarketplace is IERC721Receiver {
     ) {
         ListItem memory listing = listings[nftAddress][tokenId];
         if (listing.price > 0) {
-            revert ItemAlreadyListed();
+            revert("ItemAlreadyListed");
         }
         _;
     }
@@ -50,35 +47,37 @@ contract NftMarketplace is IERC721Receiver {
     ) {
         IERC721 nft = IERC721(nftAddress);
         address owner = nft.ownerOf(tokenId);
-        if (owner != spender) {
-            revert NotOwner();
-        }
+        require(owner == spender, "NotOwner");
         _;
     }
 
     function listNft(
-        uint256 _tokenId,
-        address _nftAddress,
-        uint256 _price,
-        uint256 _loanDurationInDays,
-        uint256 _interestPercentage
+        uint256 tokenId,
+        address nftAddress,
+        uint256 price,
+        uint256 loanDurationInDays,
+        uint256 interestPercentage
     )
         external
-        notListed(_tokenId, _nftAddress, msg.sender)
-        isOwner(_nftAddress, _tokenId, msg.sender)
+        isOwner(nftAddress, tokenId, msg.sender)
+        notListed(tokenId, nftAddress, msg.sender)
     {
-        if (_price <= 0) {
-            revert PriceNotGreaterThanZero();
-        }
+        // reassigning function params to local variables to avoid
+        // stack depth issue due to too many local variables
+        uint256 _tokenId = tokenId;
+        uint256 _price = price;
+        address _nftAddress = nftAddress;
+        uint256 _loanDurationInDays = loanDurationInDays;
+        uint256 _interestPercentage = interestPercentage;
+
+        require(_price > 0, "PriceNotGreaterThanZero");
 
         // depositAmount is set to 30% of the price
         uint256 _depositAmount = (_price * 30) / 100;
 
         // check if this marketplace has been approved
         IERC721 nft = IERC721(_nftAddress);
-        if (nft.getApproved(_tokenId) != address(this)) {
-            revert MarketplaceNotApproved();
-        }
+        require(nft.getApproved(_tokenId) == address(this), "MarketplaceNotApproved");
 
         listings[_nftAddress][_tokenId] = ListItem(
             _price,
@@ -112,12 +111,14 @@ contract NftMarketplace is IERC721Receiver {
      *
      * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
      */
+
     function onERC721Received(
         address operator,
         address from,
         uint256 tokenId,
         bytes calldata data
     ) external returns (bytes4) {
+        emit ERC721TokenReceived(operator, from, tokenId, data);
         return IERC721Receiver.onERC721Received.selector;
     }
 }

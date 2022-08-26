@@ -1,7 +1,8 @@
 {
   "name": "hardhat-project",
   "scripts": {
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile"
   },
   "devDependencies": {
     "@ethersproject/providers": "^5.7.0",

@@ -13,9 +13,9 @@ contract TestNft is ERC721 {
 
     constructor() ERC721("Test", "TEST") {}
 
-    function mintNft() public {
+    function mintNft(address to) public {
         uint256 _tokenCounter = _tokenIds.current();
-        _safeMint(msg.sender, _tokenCounter);
+        _safeMint(to, _tokenCounter);
         emit NftMinted(_tokenCounter);
         _tokenIds.increment();
     }
