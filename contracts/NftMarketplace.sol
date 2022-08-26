@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error PriceNotGreaterThanZero();
 error MarketplaceNotApproved();
 error ItemAlreadyListed();
+error NotOwner();
 
-contract NftMarketplace {
+contract NftMarketplace is IERC721Receiver {
     struct ListItem {
         uint256 price;
         uint256 tokenId;
@@ -25,7 +27,7 @@ contract NftMarketplace {
         uint256 indexed tokenId,
         address indexed seller,
         uint256 depositAmount,
-        uint256 loanDuration,
+        uint256 loanDurationInDays,
         uint256 interestPercentage
     );
 
@@ -41,19 +43,36 @@ contract NftMarketplace {
         _;
     }
 
+    modifier isOwner(
+        address nftAddress,
+        uint256 tokenId,
+        address spender
+    ) {
+        IERC721 nft = IERC721(nftAddress);
+        address owner = nft.ownerOf(tokenId);
+        if (owner != spender) {
+            revert NotOwner();
+        }
+        _;
+    }
+
     function listNft(
         uint256 _tokenId,
         address _nftAddress,
         uint256 _price,
-        uint256 _loanDuration,
+        uint256 _loanDurationInDays,
         uint256 _interestPercentage
-    ) external notListed(_tokenId, _nftAddress, msg.sender) {
+    )
+        external
+        notListed(_tokenId, _nftAddress, msg.sender)
+        isOwner(_nftAddress, _tokenId, msg.sender)
+    {
         if (_price <= 0) {
             revert PriceNotGreaterThanZero();
         }
 
-        // depositAmount is set to 20% of the price
-        uint256 _depositAmount = (_price * 20) / 100;
+        // depositAmount is set to 30% of the price
+        uint256 _depositAmount = (_price * 30) / 100;
 
         // check if this marketplace has been approved
         IERC721 nft = IERC721(_nftAddress);
@@ -66,7 +85,7 @@ contract NftMarketplace {
             _tokenId,
             msg.sender,
             _depositAmount,
-            _loanDuration,
+            _loanDurationInDays,
             _interestPercentage
         );
         emit ItemListed(
@@ -75,13 +94,30 @@ contract NftMarketplace {
             _tokenId,
             msg.sender,
             _depositAmount,
-            _loanDuration,
+            _loanDurationInDays,
             _interestPercentage
         );
     }
 
-    // listNft
     // buyNft
     // cancelListing
     // updateListing
+
+    /**
+     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+     * by `operator` from `from`, this function is called.
+     *
+     * It must return its Solidity selector to confirm the token transfer.
+     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
+     *
+     * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
+     */
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
