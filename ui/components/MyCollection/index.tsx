@@ -7,7 +7,7 @@ import ConnectWallet from '@components/Shared/ConnectWallet'
 import Loading from '@components/Shared/Loading'
 import { Alchemy, Network } from "alchemy-sdk";
 
-const Home = () => {
+const MyCollection = () => {
     const [nftCollected, setNftCollected] = useState([])
     const { address, isConnected } = useAccount()
 
@@ -75,4 +75,4 @@ const Home = () => {
     )
 }
 
-export default Home
+export default MyCollection

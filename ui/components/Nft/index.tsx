@@ -3,7 +3,7 @@ import { ParentGrid, GridSix } from '@components/Grid'
 import EditPost from './EditPost'
 import CheckOut from './CheckOut'
 
-const Home = () => {
+const Nft = () => {
 
   const listed = false
   const isOwner = true
@@ -173,4 +173,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Nft

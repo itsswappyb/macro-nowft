@@ -6,7 +6,7 @@ type NftCardProps = {
     listed?: boolean;
 };
 
-const NFTCard = ({ nftData, listed = false }: NftCardProps) => {
+const NFTCard = ({ listed = false }: NftCardProps) => {
     return (
         <div className="p-4 w-full md:w-1/2 lg:px-4 lg:w-1/3 transition ease-in-out hover:scale-105">
             <Link href="/nft">
