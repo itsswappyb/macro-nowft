@@ -1,9 +1,9 @@
 import Layout from "@components/Layout";
-import Home from "@components/Home";
+import Discover from "@components/Discover";
 
 const HomePage = () => (
-    <Layout title="Home | NowFT">
-        <Home />
+    <Layout title="Discover | NowFT">
+        <Discover />
     </Layout>
 );
 

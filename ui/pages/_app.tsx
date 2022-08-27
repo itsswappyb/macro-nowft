@@ -1,13 +1,12 @@
 import React from "react";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { AppProps } from "next/app";
 
 import "../styles/globals.css";
 
-// 1. Import the extendTheme function
-import { extendTheme } from "@chakra-ui/react";
+import { WagmiConfig, createClient } from "wagmi";
+import { ConnectKitProvider, getDefaultClient } from "connectkit";
 
-// 2. Extend the theme to include custom colors, fonts, etc
 const colors = {
     brand: {
         900: "#1a365d",
@@ -18,10 +17,28 @@ const colors = {
 
 const theme = extendTheme({ colors });
 
+const alchemyId = process.env.NEXT_PUBLIC_ALCHEMYKEY
+
+const client = createClient(
+  getDefaultClient({
+    appName: "nowft",
+    alchemyId,
+  }),
+);
+
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <ChakraProvider theme={theme}>
-            <Component {...pageProps} />
+            <WagmiConfig client={client}>
+                <ConnectKitProvider
+                    customTheme={{
+                        "--ck-body-background": "#111827",
+                        "--ck-font-family": "satoshi"
+                    }}
+                >
+                    <Component {...pageProps} />
+                </ConnectKitProvider>
+            </WagmiConfig>
         </ChakraProvider>
     );
 }
