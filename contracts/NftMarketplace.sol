@@ -173,28 +173,34 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         nonReentrant
         isOwner(nftAddress, tokenId, msg.sender)
     {
-        require(newPrice > 0, "PriceMustBeAboveZero");
+        address _nftAddress = nftAddress;
+        uint256 _tokenId = tokenId;
+        uint256 _newPrice = newPrice;
+        uint256 _loanDurationInWeeks = loanDurationInWeeks;
+        uint256 _interestPercentage = interestPercentage;
+
+        require(_newPrice > 0, "PriceMustBeAboveZero");
         require(
-            accumulatedProceeds[listings[nftAddress][tokenId].seller] <= 0,
+            accumulatedProceeds[listings[_nftAddress][_tokenId].seller] <= 0,
             "UnableToUpdateWithProceeds"
         );
 
-        uint256 priceWithInterest = (newPrice * (100 + interestPercentage)) / 100;
+        uint256 priceWithInterest = (_newPrice * (100 + _interestPercentage)) / 100;
         uint256 depositAmount = (priceWithInterest * 30) / 100;
 
-        listings[nftAddress][tokenId].price = newPrice;
-        listings[nftAddress][tokenId].loanDurationInWeeks = loanDurationInWeeks;
-        listings[nftAddress][tokenId].interestPercentage = interestPercentage;
-        listings[nftAddress][tokenId].remainingPayableAmount = priceWithInterest;
+        listings[_nftAddress][_tokenId].price = _newPrice;
+        listings[_nftAddress][_tokenId].loanDurationInWeeks = _loanDurationInWeeks;
+        listings[_nftAddress][_tokenId].interestPercentage = _interestPercentage;
+        listings[_nftAddress][_tokenId].remainingPayableAmount = priceWithInterest;
 
         emit ItemListed(
-            nftAddress,
-            newPrice,
-            tokenId,
+            _nftAddress,
+            _newPrice,
+            _tokenId,
             msg.sender,
             depositAmount,
-            loanDurationInWeeks,
-            interestPercentage
+            _loanDurationInWeeks,
+            _interestPercentage
         );
     }
 
@@ -251,7 +257,7 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         uint256 priceWithInterest = (listing.price * (100 + listing.interestPercentage)) / 100;
         uint256 depositAmount = (priceWithInterest * 30) / 100;
 
-        require(msg.value == depositAmount, "InsufficientDeposit");
+        require(msg.value >= depositAmount, "InsufficientDeposit");
 
         accumulatedProceeds[listing.seller] += msg.value;
         storageListing.remainingPayableAmount = listing.remainingPayableAmount - msg.value;
@@ -280,10 +286,11 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         nonReentrant
         isListed(nftAddress, tokenId)
         loanDurationExpired(nftAddress, tokenId)
-        returns (bool)
     {
-        ListItem memory listing = listings[nftAddress][tokenId];
-        ListItem storage storageListing = listings[nftAddress][tokenId];
+        address _nftAddress = nftAddress;
+        uint256 _tokenId = tokenId;
+        ListItem memory listing = listings[_nftAddress][_tokenId];
+        ListItem storage storageListing = listings[_nftAddress][_tokenId];
 
         require(listing.hasPaidDeposit == true, "MustPayDepositBeforeInstalment");
         require(listing.remainingPayableAmount > 0, "IntalmentsAlreadyPaid");
@@ -307,23 +314,18 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
 
         // If payment has defaulted, transfer proceeds + NFT back to seller
         if (paymentDefaulted) {
-            (bool sent, bytes memory data) = listing.seller.call{
-                value: accumulatedProceeds[listing.seller]
-            }("");
+            (bool sent, ) = listing.seller.call{value: accumulatedProceeds[listing.seller]}("");
             require(sent, "UnableToTransferProceedsToSeller");
 
             // transfer the NFT back to the seller
-            IERC721(nftAddress).safeTransferFrom(address(this), listing.seller, tokenId);
-            return false;
+            IERC721(_nftAddress).safeTransferFrom(address(this), listing.seller, _tokenId);
         }
 
         accumulatedProceeds[listing.seller] += msg.value;
         storageListing.remainingPayableAmount = listing.remainingPayableAmount - msg.value;
         storageListing.instalmentPaidAt = block.timestamp;
 
-        emit PaidInstalment(msg.sender, nftAddress, tokenId);
-
-        return true;
+        emit PaidInstalment(msg.sender, _nftAddress, _tokenId);
     }
 
     /*
