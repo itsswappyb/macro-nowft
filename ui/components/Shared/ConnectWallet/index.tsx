@@ -1,8 +1,8 @@
 import React from 'react'
 import { ConnectKitButton } from "connectkit";
 import { shortenAddress } from '@utils/shortenAddress'
-import { Disclosure, Menu } from '@headlessui/react'
-import { MenuIcon, XIcon, UserCircleIcon } from '@heroicons/react/outline'
+import { Menu } from '@headlessui/react'
+import { UserCircleIcon } from '@heroicons/react/outline'
 
 const index = () => {
   return (

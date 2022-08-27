@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Disclosure, Menu } from '@headlessui/react'
-import { MenuIcon, XIcon, UserCircleIcon } from '@heroicons/react/outline'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import NavItems from './NavItems'
 import ProfileDropdown from './ProfileDropdown'
 import Image from 'next/Image'

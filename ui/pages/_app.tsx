@@ -33,7 +33,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <ConnectKitProvider
                     customTheme={{
                         "--ck-body-background": "#111827",
-                        "--ck-body-background-secondary": "#374151",
                         "--ck-font-family": "satoshi"
                     }}
                 >

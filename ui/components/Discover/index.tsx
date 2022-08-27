@@ -1,6 +1,6 @@
 import React from 'react'
 import { SearchIcon } from '@heroicons/react/outline'
-import NFTCard from '@components/Shared/NFTCard'
+import NFTCardMock from '@components/Shared/NFTCardMock'
 
 import { mockExplore } from '@components/mockData.js'
 
@@ -23,7 +23,7 @@ const Discover = () => {
         <div className="container mt-6 mb-12 mx-auto px-4 md:px-12">
           <div className="flex flex-wrap">
             {mockExplore.map((item) => (
-              <NFTCard listed={true}/>
+              <NFTCardMock listed={true}/>
             ))}
           </div>
         </div>

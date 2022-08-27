@@ -1,10 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { uriConverter } from '@utils/uriConverter'
 
 type NftCardProps = {
-    nftData: any,
     listed?: boolean;
 };
 
@@ -17,12 +15,12 @@ const NFTCard = ({ nftData, listed = false }: NftCardProps) => {
                     !listed && "bg-gray-700"
                 )}>
                     <img className="w-full rounded-2xl mb-4"
-                        src={uriConverter(nftData.rawMetadata.image)}
+                        src="doodles.png"
                     />
                     <div className="flex justify-between max-w-sm">
                         <div>
-                            <div className="text-2xl font-bold">{nftData.title}</div>
-                            {/* <div className="text-gray-400 font-medium">Doodles Collection</div> */}
+                            <div className="text-2xl font-bold">Doodles #8876</div>
+                            <div className="text-gray-400 font-medium">Doodles Collection</div>
                         </div>
                         {listed ?
                             (<div className="pt-2">
