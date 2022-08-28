@@ -84,6 +84,12 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         _;
     }
 
+    modifier hasPaidDeposit(address nftAddress, uint256 tokenId) {
+        ListItem memory listing = listings[nftAddress][tokenId];
+        require(listing.hasPaidDeposit == true, "MustPayDeposit");
+        _;
+    }
+
     /*
      * @dev function to list an NFT for sale
      * @param tokenId - this is the id of the NFT
@@ -221,12 +227,11 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
      * @param nftAddress - NFT contract address
      * @param tokenId - NFT's token id
      */
-    function buyNft(uint256 tokenId, address nftAddress)
+    function buyNft(address nftAddress, uint256 tokenId)
         external
         payable
         nonReentrant
         isListed(nftAddress, tokenId)
-        loanDurationExpired(nftAddress, tokenId)
     {
         ListItem memory listing = listings[nftAddress][tokenId];
         uint256 priceWithInterest = (listing.price * (100 + listing.interestPercentage)) / 100;
@@ -298,6 +303,7 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         payable
         nonReentrant
         isListed(nftAddress, tokenId)
+        hasPaidDeposit(nftAddress, tokenId)
         loanDurationExpired(nftAddress, tokenId)
     {
         address _nftAddress = nftAddress;
@@ -308,7 +314,6 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         address buyer = listing.buyer;
 
         require(buyer != listing.seller, "SellerUnableToPayInstallment");
-        require(listing.hasPaidDeposit == true, "MustPayDeposit");
         require(listing.remainingPayableAmount > 0, "IntalmentsAlreadyPaid");
 
         uint256 priceWithInterest = (listing.price * (100 + listing.interestPercentage)) / 100;

@@ -57,36 +57,24 @@ describe("NftMarketplace", () => {
                     TOKEN_ID,
                     TestNft.address,
                     ONE_ETHER.mul(30),
-                    SECONDS_IN_WEEK * 4,
+                    4,
                     20
                 )
             ).to.be.revertedWith("NotOwner");
         });
         it("should list NFT successfully", async () => {
             expect(
-                await NftMarketplace.listNft(
-                    TOKEN_ID,
-                    TestNft.address,
-                    ONE_ETHER.mul(30),
-                    SECONDS_IN_WEEK * 4,
-                    20
-                )
+                await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20)
             ).to.emit(NftMarketplace, "ItemListed");
         });
         it("should revert if NFT is already listed", async () => {
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(30),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20);
             await expect(
                 NftMarketplace.connect(bob).listNft(
                     TOKEN_ID,
                     TestNft.address,
                     ONE_ETHER.mul(30),
-                    SECONDS_IN_WEEK * 4,
+                    4,
                     20
                 )
             ).to.be.revertedWith("NotOwner");
@@ -95,13 +83,7 @@ describe("NftMarketplace", () => {
 
     describe("cancelListing", () => {
         it("it revert if non-owner tries to remove listing", async () => {
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(30),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20);
             await expect(
                 NftMarketplace.connect(alice).cancelListing(TestNft.address, TOKEN_ID)
             ).to.be.revertedWith("NotOwner");
@@ -112,13 +94,7 @@ describe("NftMarketplace", () => {
             ).to.be.revertedWith("NotListed");
         });
         it("it successfully deletes listing", async () => {
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(30),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20);
             await expect(NftMarketplace.cancelListing(TestNft.address, TOKEN_ID))
                 .to.emit(NftMarketplace, "ItemCancelled")
                 .withArgs(deployer.address, TestNft.address, TOKEN_ID);
@@ -126,37 +102,25 @@ describe("NftMarketplace", () => {
     });
     describe("updateListing", () => {
         it("it successfully updates listing", async () => {
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(30),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20);
             const originalListing = await NftMarketplace.getListing(TestNft.address, TOKEN_ID);
             await NftMarketplace.updateListing(
                 TestNft.address,
                 TOKEN_ID,
                 ONE_ETHER.mul(20),
-                SECONDS_IN_WEEK * 4,
+                4,
                 20
             );
 
             const updatedListing = await NftMarketplace.getListing(TestNft.address, TOKEN_ID);
             expect(updatedListing).to.not.eq(originalListing);
             expect(updatedListing.price).to.eq(ONE_ETHER.mul(20));
-            expect(updatedListing.loanDurationInWeeks).to.eq(SECONDS_IN_WEEK * 4);
+            expect(updatedListing.loanDurationInWeeks).to.eq(4);
             expect(updatedListing.interestPercentage).to.eq(20);
         });
         it("it reverts if trying to update unlisted item", async () => {
             await expect(
-                NftMarketplace.updateListing(
-                    TestNft.address,
-                    TOKEN_ID,
-                    ONE_ETHER.mul(20),
-                    SECONDS_IN_WEEK * 4,
-                    20
-                )
+                NftMarketplace.updateListing(TestNft.address, TOKEN_ID, ONE_ETHER.mul(20), 4, 20)
             ).to.be.revertedWith("NotListed");
         });
         it("it reverts if non-owner trying to update listed item", async () => {
@@ -165,19 +129,13 @@ describe("NftMarketplace", () => {
                     TestNft.address,
                     TOKEN_ID,
                     ONE_ETHER.mul(20),
-                    SECONDS_IN_WEEK * 4,
+                    4,
                     20
                 )
             ).to.be.revertedWith("NotListed");
         });
         it("it successfully deletes listing", async () => {
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(30),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20);
             await expect(NftMarketplace.cancelListing(TestNft.address, TOKEN_ID))
                 .to.emit(NftMarketplace, "ItemCancelled")
                 .withArgs(deployer.address, TestNft.address, TOKEN_ID);
@@ -191,26 +149,14 @@ describe("NftMarketplace", () => {
             );
         });
         it("it reverts if seller tries to pay deposit", async () => {
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(30),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(30), 4, 20);
             await expect(NftMarketplace.payDeposit(TestNft.address, TOKEN_ID)).to.be.revertedWith(
                 "SellerUnableToDeposit"
             );
         });
         it("it reverts if deposit amount is incorrect", async () => {
             const price = 30;
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(price),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(price), 4, 20);
             const priceWithInterest = (price * 120) / 100;
             const depositAmount = (priceWithInterest * 30) / 100;
             const wrongDepositAmount = depositAmount - 10;
@@ -227,13 +173,7 @@ describe("NftMarketplace", () => {
         });
         it("it reverts if trying to update unlisted item", async () => {
             await expect(
-                NftMarketplace.updateListing(
-                    TestNft.address,
-                    TOKEN_ID,
-                    ONE_ETHER.mul(20),
-                    SECONDS_IN_WEEK * 4,
-                    20
-                )
+                NftMarketplace.updateListing(TestNft.address, TOKEN_ID, ONE_ETHER.mul(20), 4, 20)
             ).to.be.revertedWith("NotListed");
         });
         it("it reverts if non-owner trying to update listed item", async () => {
@@ -242,20 +182,14 @@ describe("NftMarketplace", () => {
                     TestNft.address,
                     TOKEN_ID,
                     ONE_ETHER.mul(20),
-                    SECONDS_IN_WEEK * 4,
+                    4,
                     20
                 )
             ).to.be.revertedWith("NotListed");
         });
         it("it updates accumulatedProceeds correctly", async () => {
             const price = 30;
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(price),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(price), 4, 20);
             const priceWithInterest = (price * 120) / 100;
             const depositAmount = (priceWithInterest * 30) / 100;
 
@@ -305,13 +239,7 @@ describe("NftMarketplace", () => {
         });
         it("should revert if tries to pay installment with unpaid deposit", async () => {
             const price = 30;
-            await NftMarketplace.listNft(
-                TOKEN_ID,
-                TestNft.address,
-                ONE_ETHER.mul(price),
-                SECONDS_IN_WEEK * 4,
-                20
-            );
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(price), 4, 20);
             await expect(
                 NftMarketplace.connect(alice).payInstallment(TestNft.address, TOKEN_ID)
             ).to.be.revertedWith("MustPayDeposit");
@@ -327,7 +255,7 @@ describe("NftMarketplace", () => {
                 NftMarketplace.connect(alice).payInstallment(TestNft.address, TOKEN_ID)
             ).to.be.revertedWith("IncorrectInstalmentAmount");
         });
-        it.only("should succeed with correct installment amount", async () => {
+        it("should succeed with correct installment amount", async () => {
             const price = 10;
             const priceWithInterest = (price * 120) / 100;
             const depositAmount = (priceWithInterest * 30) / 100;
@@ -338,9 +266,6 @@ describe("NftMarketplace", () => {
             const formattedDepositAmount = ethers.utils.parseEther(`${depositAmount}`);
             const formattedPriceWithInterest = ethers.utils.parseEther(`${priceWithInterest}`);
 
-            // let instalmentAmount = formattedPriceWithInterest.sub(formattedDepositAmount);
-            // instalmentAmount = instalmentAmount.div(loanDurationInWeeks);
-
             await payDepositHelper(price, priceWithInterest, depositAmount);
 
             await expect(
@@ -348,6 +273,47 @@ describe("NftMarketplace", () => {
                     value: formattedInstalmentAmount
                 })
             ).to.emit(NftMarketplace, "PaidInstalment");
+        });
+    });
+    describe("buyNft", () => {
+        it("reverts if the item isnt listed", async () => {
+            await expect(NftMarketplace.buyNft(TestNft.address, TOKEN_ID)).to.be.revertedWith(
+                "NotListed"
+            );
+        });
+        it("reverts if has not paid loan", async () => {
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(10), 4, 20);
+
+            await expect(NftMarketplace.buyNft(TestNft.address, TOKEN_ID)).to.be.revertedWith(
+                "HasNotPaidLoan"
+            );
+        });
+        it("transfers the nft to the buyer and updates proceeds", async () => {
+            const price = 10;
+            const priceWithInterest = (price * 120) / 100;
+            const depositAmount = (priceWithInterest * 30) / 100;
+            const loanDurationInWeeks = 4;
+            const instalmentAmount = (priceWithInterest - depositAmount) / loanDurationInWeeks;
+            const formattedInstalmentAmount = ethers.utils.parseEther(`${instalmentAmount}`);
+
+            const formattedDepositAmount = ethers.utils.parseEther(`${depositAmount}`);
+            const formattedPriceWithInterest = ethers.utils.parseEther(`${priceWithInterest}`);
+
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(price), 4, 20);
+
+            await NftMarketplace.connect(alice).payDeposit(TestNft.address, TOKEN_ID, {
+                value: formattedDepositAmount
+            });
+
+            for (let i = 0; i < 4; i++) {
+                await NftMarketplace.connect(alice).payInstallment(TestNft.address, TOKEN_ID, {
+                    value: formattedInstalmentAmount
+                });
+            }
+
+            await expect(NftMarketplace.connect(alice).buyNft(TestNft.address, TOKEN_ID))
+                .to.emit(NftMarketplace, "ItemBought")
+                .withArgs(alice.address, TestNft.address, TOKEN_ID, ONE_ETHER.mul(price));
         });
     });
 });
