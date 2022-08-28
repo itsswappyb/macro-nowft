@@ -4,8 +4,6 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "hardhat/console.sol";
-
 contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
     struct ListItem {
         uint256 price;
