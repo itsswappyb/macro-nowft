@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: "Satoshi";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: auto;
+    src: url(/fonts/Satoshi-Variable.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: "SatoshiItalic";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: auto;
+    src: url(/fonts/Satoshi-VariableItalic.woff2) format("woff2");
+}
