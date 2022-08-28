@@ -4,6 +4,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+// import "hardhat/console.sol";
+
 contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
     struct ListItem {
         uint256 price;
@@ -257,10 +259,10 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         uint256 priceWithInterest = (listing.price * (100 + listing.interestPercentage)) / 100;
         uint256 depositAmount = (priceWithInterest * 30) / 100;
 
-        require(msg.value >= depositAmount, "InsufficientDeposit");
+        require(msg.value == depositAmount, "IncorrectDeposit");
 
         accumulatedProceeds[listing.seller] += msg.value;
-        storageListing.remainingPayableAmount = listing.remainingPayableAmount - msg.value;
+        storageListing.remainingPayableAmount = priceWithInterest - msg.value;
         listing.hasPaidDeposit = true;
 
         // transfer NFT to marketplace after deposit has been paid
