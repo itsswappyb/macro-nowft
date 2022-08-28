@@ -4,13 +4,14 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
     struct ListItem {
         uint256 price;
         uint256 tokenId;
         address seller;
+        address buyer;
         uint256 depositAmount;
         uint256 loanDurationInWeeks;
         uint256 interestPercentage;
@@ -23,11 +24,14 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
     mapping(address => mapping(uint256 => ListItem)) private listings;
     mapping(address => uint256) private accumulatedProceeds;
 
+    uint256 private constant SECONDS_IN_A_WEEK = 60 * 60 * 24 * 7;
+
     event ItemListed(
         address indexed nftAddress,
         uint256 price,
         uint256 indexed tokenId,
         address indexed seller,
+        address buyer,
         uint256 depositAmount,
         uint256 loanDurationInWeeks,
         uint256 interestPercentage
@@ -72,7 +76,8 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
     modifier loanDurationExpired(address nftAddress, uint256 tokenId) {
         ListItem memory listing = listings[nftAddress][tokenId];
         require(
-            (block.timestamp <= listing.depositPaidAt + listing.loanDurationInWeeks) &&
+            (block.timestamp <=
+                listing.depositPaidAt + (SECONDS_IN_A_WEEK * listing.loanDurationInWeeks)) &&
                 listing.hasPaidDeposit,
             "LoanDurationExpired"
         );
@@ -124,6 +129,7 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
             _price,
             _tokenId,
             msg.sender,
+            msg.sender,
             _depositAmount,
             _loanDurationInWeeks,
             _interestPercentage,
@@ -136,6 +142,7 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
             _nftAddress,
             _price,
             _tokenId,
+            msg.sender,
             msg.sender,
             _depositAmount,
             _loanDurationInWeeks,
@@ -195,11 +202,14 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         listings[_nftAddress][_tokenId].interestPercentage = _interestPercentage;
         listings[_nftAddress][_tokenId].remainingPayableAmount = priceWithInterest;
 
+        ListItem memory listing = listings[_nftAddress][_tokenId];
+
         emit ItemListed(
             _nftAddress,
             _newPrice,
             _tokenId,
             msg.sender,
+            listing.buyer,
             depositAmount,
             _loanDurationInWeeks,
             _interestPercentage
@@ -263,7 +273,8 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
 
         accumulatedProceeds[listing.seller] += msg.value;
         storageListing.remainingPayableAmount = priceWithInterest - msg.value;
-        listing.hasPaidDeposit = true;
+        storageListing.hasPaidDeposit = true;
+        storageListing.buyer = buyer;
 
         // transfer NFT to marketplace after deposit has been paid
         IERC721(nftAddress).safeTransferFrom(listing.seller, address(this), tokenId);
@@ -294,14 +305,18 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
         ListItem memory listing = listings[_nftAddress][_tokenId];
         ListItem storage storageListing = listings[_nftAddress][_tokenId];
 
-        require(listing.hasPaidDeposit == true, "MustPayDepositBeforeInstalment");
+        address buyer = listing.buyer;
+
+        require(buyer != listing.seller, "SellerUnableToPayInstallment");
+        require(listing.hasPaidDeposit == true, "MustPayDeposit");
         require(listing.remainingPayableAmount > 0, "IntalmentsAlreadyPaid");
 
         uint256 priceWithInterest = (listing.price * (100 + listing.interestPercentage)) / 100;
 
         uint256 depositAmount = (priceWithInterest * 30) / 100;
+
         uint256 instalmentAmount = (priceWithInterest - depositAmount) /
-            listing.loanDurationInWeeks;
+            (listing.loanDurationInWeeks);
 
         uint256 amountSent = msg.value;
 
@@ -320,14 +335,15 @@ contract NftMarketplace is IERC721Receiver, ReentrancyGuard {
             require(sent, "UnableToTransferProceedsToSeller");
 
             // transfer the NFT back to the seller
-            IERC721(_nftAddress).safeTransferFrom(address(this), listing.seller, _tokenId);
+            IERC721(_nftAddress).safeTransferFrom(address(this), listing.seller, 0);
         }
 
         accumulatedProceeds[listing.seller] += msg.value;
+
         storageListing.remainingPayableAmount = listing.remainingPayableAmount - msg.value;
         storageListing.instalmentPaidAt = block.timestamp;
 
-        emit PaidInstalment(msg.sender, _nftAddress, _tokenId);
+        emit PaidInstalment(buyer, _nftAddress, _tokenId);
     }
 
     /*

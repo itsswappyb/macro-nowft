@@ -282,4 +282,72 @@ describe("NftMarketplace", () => {
             expect(marketplaceBalanceAfter).to.eq(1);
         });
     });
+
+    describe("payInstallment", () => {
+        const payDepositHelper = async (
+            price: number,
+            priceWithInterest: number,
+            depositAmount: number
+        ) => {
+            const formattedDepositAmount = ethers.utils.parseEther(`${depositAmount}`);
+
+            await NftMarketplace.listNft(TOKEN_ID, TestNft.address, ONE_ETHER.mul(price), 4, 20);
+
+            await NftMarketplace.connect(alice).payDeposit(TestNft.address, TOKEN_ID, {
+                value: formattedDepositAmount
+            });
+        };
+
+        it("it should revert if not listed", async () => {
+            await expect(
+                NftMarketplace.payInstallment(TestNft.address, TOKEN_ID)
+            ).to.be.revertedWith("NotListed");
+        });
+        it("should revert if tries to pay installment with unpaid deposit", async () => {
+            const price = 30;
+            await NftMarketplace.listNft(
+                TOKEN_ID,
+                TestNft.address,
+                ONE_ETHER.mul(price),
+                SECONDS_IN_WEEK * 4,
+                20
+            );
+            await expect(
+                NftMarketplace.connect(alice).payInstallment(TestNft.address, TOKEN_ID)
+            ).to.be.revertedWith("MustPayDeposit");
+        });
+        it("should revert if owner tries to pay incorrect installment amount", async () => {
+            const price = 10;
+            const priceWithInterest = (price * 120) / 100;
+            const depositAmount = (priceWithInterest * 30) / 100;
+
+            await payDepositHelper(price, priceWithInterest, depositAmount);
+
+            await expect(
+                NftMarketplace.connect(alice).payInstallment(TestNft.address, TOKEN_ID)
+            ).to.be.revertedWith("IncorrectInstalmentAmount");
+        });
+        it.only("should succeed with correct installment amount", async () => {
+            const price = 10;
+            const priceWithInterest = (price * 120) / 100;
+            const depositAmount = (priceWithInterest * 30) / 100;
+            const loanDurationInWeeks = 4;
+            const instalmentAmount = (priceWithInterest - depositAmount) / loanDurationInWeeks;
+            const formattedInstalmentAmount = ethers.utils.parseEther(`${instalmentAmount}`);
+
+            const formattedDepositAmount = ethers.utils.parseEther(`${depositAmount}`);
+            const formattedPriceWithInterest = ethers.utils.parseEther(`${priceWithInterest}`);
+
+            // let instalmentAmount = formattedPriceWithInterest.sub(formattedDepositAmount);
+            // instalmentAmount = instalmentAmount.div(loanDurationInWeeks);
+
+            await payDepositHelper(price, priceWithInterest, depositAmount);
+
+            await expect(
+                NftMarketplace.connect(alice).payInstallment(TestNft.address, TOKEN_ID, {
+                    value: formattedInstalmentAmount
+                })
+            ).to.emit(NftMarketplace, "PaidInstalment");
+        });
+    });
 });
