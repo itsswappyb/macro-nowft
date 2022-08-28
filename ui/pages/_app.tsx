@@ -20,7 +20,7 @@ import { publicProvider } from "wagmi/providers/public";
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMYKEY;
 
 const { chains, provider } = configureChains(
-    [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
+    [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum, chain.localhost],
     [alchemyProvider({ apiKey: alchemyId }), publicProvider()]
 );
 
@@ -55,7 +55,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     return (
         <ChakraProvider theme={theme}>
             <WagmiConfig client={wagmiClient}>
-                <RainbowKitProvider chains={chains} theme={rainbowKitTheme} modalSize="compact">
+                <RainbowKitProvider
+                    chains={chains}
+                    theme={rainbowKitTheme}
+                    modalSize="compact"
+                    // TODO: change this for testnet / mainnet
+                    initialChain={chain.localhost}
+                >
                     <Component {...pageProps} />
                 </RainbowKitProvider>
             </WagmiConfig>
