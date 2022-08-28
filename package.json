@@ -2,7 +2,8 @@
   "name": "hardhat-project",
   "scripts": {
     "test": "npx hardhat test",
-    "compile": "npx hardhat compile"
+    "compile": "npx hardhat compile",
+    "deploy:local": "npx hardhat run scripts/deploy.ts --network localhost"
   },
   "devDependencies": {
     "@ethersproject/providers": "^5.7.0",

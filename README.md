@@ -13,7 +13,11 @@ npx hardhat run scripts/deploy.ts
 ```
 
 # Running application
-
+**Contracts**
 - Install root level dependencies by running `yarn`.
+- Run the local node `npx hardhat node`
+- Deploy contracts locally `yarn deploy:local`
+
+**Frontend**
 - cd into `ui` and install dependecies by running `yarn`.
 - To run the `ui`, run `yarn dev` from `ui`.
