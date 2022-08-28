@@ -3,9 +3,31 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { AppProps } from "next/app";
 
 import "../styles/globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
 
-import { WagmiConfig, createClient } from "wagmi";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
+import merge from "lodash.merge";
+import {
+    ConnectButton,
+    getDefaultWallets,
+    lightTheme,
+    RainbowKitProvider,
+    Theme,
+} from "@rainbow-me/rainbowkit";
+import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { publicProvider } from "wagmi/providers/public";
+
+const alchemyId = process.env.NEXT_PUBLIC_ALCHEMYKEY;
+
+const { chains, provider } = configureChains(
+    [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
+    [alchemyProvider({ apiKey: alchemyId }), publicProvider()]
+);
+
+const { connectors } = getDefaultWallets({
+    appName: "nowft",
+    chains,
+});
 
 const colors = {
     brand: {
@@ -17,28 +39,27 @@ const colors = {
 
 const theme = extendTheme({ colors });
 
-const alchemyId = process.env.NEXT_PUBLIC_ALCHEMYKEY
+const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+});
 
-const client = createClient(
-  getDefaultClient({
-    appName: "nowft",
-    alchemyId,
-  }),
-);
+const rainbowKitTheme = merge(lightTheme(), {
+    colors: {
+        accentColor: "#07296d",
+    },
+} as Theme);
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <ChakraProvider theme={theme}>
-            <WagmiConfig client={client}>
-                <ConnectKitProvider
-                    customTheme={{
-                        "--ck-body-background": "#111827",
-                        "--ck-font-family": "satoshi"
-                    }}
-                >
+            <WagmiConfig client={wagmiClient}>
+                <RainbowKitProvider chains={chains} theme={rainbowKitTheme} modalSize="compact">
                     <Component {...pageProps} />
-                </ConnectKitProvider>
+                </RainbowKitProvider>
             </WagmiConfig>
+            //{" "}
         </ChakraProvider>
     );
 }
