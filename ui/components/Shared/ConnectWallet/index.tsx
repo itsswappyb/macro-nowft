@@ -67,7 +67,7 @@ const index = () => {
                             }
 
                             return (
-                                <div style={{ display: "flex", gap: 12 }}>
+                                <div style={{ display: "flex", gap: 12 }} className="text-white">
                                     <button
                                         onClick={openChainModal}
                                         style={{ display: "flex", alignItems: "center" }}
@@ -96,8 +96,13 @@ const index = () => {
                                         {chain.name}
                                     </button>
 
-                                    <button onClick={openAccountModal} type="button">
-                                        {account.displayName}
+                                    <button
+                                        onClick={openAccountModal}
+                                        type="button"
+                                        className="text-white"
+                                    >
+                                        {account.displayName} &nbsp;
+                                        {shortenAddress(account.address)}
                                         {account.displayBalance
                                             ? ` (${account.displayBalance})`
                                             : ""}
