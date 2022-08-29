@@ -29,13 +29,11 @@ contract TestNft is ERC721Enumerable {
         return _tokenIds.current();
     }
 
-    function tokenOfOwnerByIndex(address owner, uint256 index)
-        public
-        view
-        virtual
-        override
-        returns (uint256)
-    {
-        return tokenOfOwnerByIndex(owner, index);
+    function tokenOfOwnerByIndex(
+        address nftAddress,
+        address owner,
+        uint256 index
+    ) public view returns (uint256) {
+        return ERC721Enumerable(nftAddress).tokenOfOwnerByIndex(owner, index);
     }
 }
