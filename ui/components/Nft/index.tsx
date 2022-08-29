@@ -5,13 +5,13 @@ import CheckOut from "./CheckOut";
 // import useMarketplace from "@hooks/useMarketplace";
 import useMarketplace from "../../hooks/useMarketplace";
 import { useAccount } from "wagmi";
+import { ethers } from "ethers";
 
 const Nft = () => {
     const listed = false;
     const isOwner = true;
 
     let [isOpen, setIsOpen] = useState<boolean>(false);
-    let [tokenUri, setTokenUri] = useState<string>("defaultUri");
 
     function closeModal() {
         setIsOpen(false);
@@ -21,13 +21,12 @@ const Nft = () => {
         setIsOpen(true);
     }
 
-    const { mintNft, getTokenUri } = useMarketplace();
+    const { mintNft, getTokenUri, getTokenOfOwnerByIndex, getTokenCounter, tokenCounter } =
+        useMarketplace();
     const { address } = useAccount();
 
-    useEffect(() => {
-        console.log("address: ", address);
-        console.log(tokenUri);
-    }, []);
+    console.log({ tokenCounter: Math.floor(Number(ethers.utils.formatEther(`${tokenCounter}`))) });
+
     return (
         <div className="max-w-7xl mx-auto px-8 md:px-24 lg:px-32 py-5">
             <ParentGrid className="mt-12">
@@ -195,9 +194,8 @@ const Nft = () => {
                                             onClick={async (e) => {
                                                 e.preventDefault();
                                                 // await mintNft(address);
-
-                                                const _tokenUri = await getTokenUri(0);
-                                                setTokenUri(_tokenUri);
+                                                // getTokenUri(1);
+                                                getTokenCounter();
                                             }}
                                         >
                                             List
