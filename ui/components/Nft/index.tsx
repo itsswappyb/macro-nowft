@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ParentGrid, GridSix } from "@components/Grid";
 import EditPost from "./EditPost";
 import CheckOut from "./CheckOut";
+// import useMarketplace from "@hooks/useMarketplace";
+import useMarketplace from "../../hooks/useMarketplace";
+import { useAccount } from "wagmi";
+import { ethers } from "ethers";
 
 const Nft = () => {
     const listed = false;
     const isOwner = true;
 
-    let [isOpen, setIsOpen] = useState(false);
+    let [isOpen, setIsOpen] = useState<boolean>(false);
 
     function closeModal() {
         setIsOpen(false);
@@ -16,6 +20,12 @@ const Nft = () => {
     function openModal() {
         setIsOpen(true);
     }
+
+    const { mintNft, getTokenUri, getTokenOfOwnerByIndex, getTokenCounter, tokenCounter } =
+        useMarketplace();
+    const { address } = useAccount();
+
+    console.log({ tokenCounter: Math.floor(Number(ethers.utils.formatEther(`${tokenCounter}`))) });
 
     return (
         <div className="max-w-7xl mx-auto px-8 md:px-24 lg:px-32 py-5">
@@ -179,7 +189,15 @@ const Nft = () => {
                                         </div>
                                     </div>
                                     <div className="flex justify-end">
-                                        <button className="bg-spritzig hover:bg-corsair font-semibold py-3 px-16 rounded-2xl">
+                                        <button
+                                            className="bg-spritzig hover:bg-corsair font-semibold py-3 px-16 rounded-2xl"
+                                            onClick={async (e) => {
+                                                e.preventDefault();
+                                                // await mintNft(address);
+                                                // getTokenUri(1);
+                                                getTokenCounter();
+                                            }}
+                                        >
                                             List
                                         </button>
                                     </div>

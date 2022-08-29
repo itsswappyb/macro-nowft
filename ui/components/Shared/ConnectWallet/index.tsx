@@ -60,7 +60,11 @@ const index = () => {
 
                             if (chain.unsupported) {
                                 return (
-                                    <button onClick={openChainModal} type="button">
+                                    <button
+                                        onClick={openChainModal}
+                                        type="button"
+                                        className="text-red-500"
+                                    >
                                         Wrong network
                                     </button>
                                 );
